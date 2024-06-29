@@ -1,0 +1,24 @@
+{
+  "projects": {
+    "default": "nomadiq-dev-5c8b6",
+    "production": "nomadiq-bab6d"
+  },
+  "targets": {
+    "nomadiq-dev-5c8b6": {
+      "hosting": {
+        "nomadiq-development": [
+          "nomadiq-development"
+        ]
+      }
+    },
+    "nomadiq-bab6d": {
+      "hosting": {
+        "nomadiq-production": [
+          "nomadiq"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

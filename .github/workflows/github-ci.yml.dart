@@ -1,0 +1,85 @@
+name: Nomadiq CI
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+      - production
+  push:
+    branches:
+      - main
+      - production
+
+env:
+  FLUTTER_VERSION: 3.22.0
+
+jobs:
+    build_dev:
+        name: Build Dev
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Setup Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  flutter-version: ${{ env.FLUTTER_VERSION }}
+
+            - name: Get packages
+              run: flutter pub get
+
+            - name: Build Flutter Web
+              run: flutter build web
+
+            - name: Archive Dev Artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                  name: dev-artifacts
+                  path: build/web
+
+    test_dev:
+        name: Test Dev
+        runs-on: ubuntu-latest
+        if: github.event_name == 'pull_request'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Setup Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  flutter-version: ${{ env.FLUTTER_VERSION }}
+
+            - name: Get packages
+              run: flutter pub get
+
+            - name: Run Tests
+              run: flutter test
+
+    deploy_dev:
+        name: Deploy Dev
+        runs-on: ubuntu-latest
+        needs: [build_dev, test_dev]
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Download Dev Artifacts
+              uses: actions/download-artifact@v2
+              with:
+                  name: dev-artifacts
+
+            - name: Install Firebase CLI
+              run: npm install -g firebase-tools
+
+            - name: Deploy to Dev Firebase Hosting
+              run: firebase deploy -m "$(grep -E '\bversion\b' pubspec.yaml | sed 's/version":" //') | ID ${{ github.run_id }} Number ${{ github.run_number }}" -- project default --only hosting:${{ secrets.DEV_HOSTING_TARGET }} --non-interactive --token "${{ secrets.FIREBASE_TOKEN }}"
