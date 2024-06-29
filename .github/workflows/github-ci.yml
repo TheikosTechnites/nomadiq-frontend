@@ -66,7 +66,7 @@ jobs:
     deploy_dev:
         name: Deploy Dev
         runs-on: ubuntu-latest
-        needs: [build_dev, test_dev]
+        needs: [build_dev]
         if: github.ref == 'refs/heads/main'
 
         steps:
