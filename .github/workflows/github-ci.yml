@@ -82,4 +82,4 @@ jobs:
               run: npm install -g firebase-tools
 
             - name: Deploy to Dev Firebase Hosting
-              run: firebase deploy -m "$(grep -E '\bversion\b' pubspec.yaml | sed 's/version":" //') | ID ${{ github.run_id }} Number ${{ github.run_number }}" -- project default --only hosting:${{ secrets.DEV_HOSTING_TARGET }} --non-interactive --token ${{ secrets.FIREBASE_TOKEN }}
+              run: firebase deploy -m "Nomadiq Development Deployment ID ${{ github.run_id }} Number ${{ github.run_number }}" -- project default --only hosting:${{ secrets.DEV_HOSTING_TARGET }} --non-interactive --token ${{ secrets.FIREBASE_TOKEN }}
